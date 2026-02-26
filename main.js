@@ -1,172 +1,185 @@
-const lottoDisplay = document.getElementById('lotto-display');
-const drawBtn = document.getElementById('draw-btn');
-const balanceEl = document.getElementById('balance');
-const roiEl = document.getElementById('roi');
-const numberPicker = document.getElementById('number-picker');
-const selectionDisplay = document.getElementById('my-selection');
-const autoPickBtn = document.getElementById('auto-pick');
-const clearPickBtn = document.getElementById('clear-pick');
-const resultMessage = document.getElementById('result-message');
-const historyList = document.getElementById('history-list');
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
 
-let balance = 10000;
-let totalSpent = 0;
-let totalWon = 0;
-let selectedNumbers = [];
+let score = 0;
+let gameOver = false;
 
-// 1. 번호 선택판 생성
-function initPicker() {
-    numberPicker.innerHTML = '';
-    for (let i = 1; i <= 45; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'num-btn';
-        btn.textContent = i;
-        btn.addEventListener('click', () => toggleNumber(i, btn));
-        numberPicker.appendChild(btn);
-    }
+// 키보드 입력 상태 관리
+const keys = {
+    ArrowRight: false,
+    ArrowLeft: false,
+    ArrowUp: false,
+    Space: false
+};
+
+document.addEventListener('keydown', (e) => {
+    if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+    if (e.code === 'Space') keys.ArrowUp = true;
+});
+
+document.addEventListener('keyup', (e) => {
+    if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
+    if (e.code === 'Space') keys.ArrowUp = false;
+});
+
+// 플레이어 (마리오 역할)
+const player = {
+    x: 50,
+    y: 300,
+    width: 30,
+    height: 30,
+    speed: 5,
+    dx: 0,
+    dy: 0,
+    gravity: 0.6,
+    jumpPower: -12,
+    grounded: false
+};
+
+// 지형 (발판 및 바닥)
+const platforms = [
+    { x: 0, y: 350, width: 800, height: 50 }, // 메인 바닥
+    { x: 200, y: 250, width: 120, height: 20 },
+    { x: 400, y: 150, width: 120, height: 20 },
+    { x: 600, y: 250, width: 120, height: 20 }
+];
+
+// 코인 (점수 아이템)
+let coins = [
+    { x: 250, y: 210, width: 20, height: 20, collected: false },
+    { x: 450, y: 110, width: 20, height: 20, collected: false },
+    { x: 650, y: 210, width: 20, height: 20, collected: false },
+    { x: 700, y: 310, width: 20, height: 20, collected: false }
+];
+
+// 게임 초기화
+function resetGame() {
+    player.x = 50;
+    player.y = 300;
+    player.dx = 0;
+    player.dy = 0;
+    score = 0;
+    scoreEl.textContent = score;
+    coins.forEach(c => c.collected = false);
+    gameOver = false;
 }
 
-function toggleNumber(num, btn) {
-    if (selectedNumbers.includes(num)) {
-        selectedNumbers = selectedNumbers.filter(n => n !== num);
-        btn.classList.remove('selected');
+// 로직 업데이트
+function update() {
+    if (gameOver) return;
+
+    // 좌우 이동
+    if (keys.ArrowRight) {
+        player.dx = player.speed;
+    } else if (keys.ArrowLeft) {
+        player.dx = -player.speed;
     } else {
-        if (selectedNumbers.length >= 6) {
-            alert('최대 6개까지만 선택할 수 있습니다.');
-            return;
+        player.dx = 0;
+    }
+
+    // 점프
+    if (keys.ArrowUp && player.grounded) {
+        player.dy = player.jumpPower;
+        player.grounded = false;
+    }
+
+    // 중력 적용
+    player.dy += player.gravity;
+    player.x += player.dx;
+    player.y += player.dy;
+
+    // 화면 경계 제한
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+    player.grounded = false;
+
+    // 플랫폼(지형) 충돌 처리
+    platforms.forEach(p => {
+        // 플레이어가 떨어지는 중이고, 플랫폼 위로 겹칠 때만 착지 판정
+        if (player.y + player.height <= p.y + player.dy && 
+            player.x + player.width > p.x && 
+            player.x < p.x + p.width) {
+            
+            if (player.y + player.height + player.dy >= p.y) {
+                player.grounded = true;
+                player.dy = 0;
+                player.y = p.y - player.height;
+            }
         }
-        selectedNumbers.push(num);
-        btn.classList.add('selected');
-    }
-    updateSelection();
-}
-
-function updateSelection() {
-    selectedNumbers.sort((a, b) => a - b);
-    selectionDisplay.textContent = selectedNumbers.length > 0 ? selectedNumbers.join(', ') : '번호를 선택해주세요.';
-    drawBtn.disabled = selectedNumbers.length !== 6;
-}
-
-// 자동 선택
-autoPickBtn.addEventListener('click', () => {
-    selectedNumbers = [];
-    while (selectedNumbers.length < 6) {
-        const n = Math.floor(Math.random() * 45) + 1;
-        if (!selectedNumbers.includes(n)) selectedNumbers.push(n);
-    }
-    document.querySelectorAll('.num-btn').forEach(btn => {
-        btn.classList.toggle('selected', selectedNumbers.includes(parseInt(btn.textContent)));
     });
-    updateSelection();
-});
 
-// 초기화
-clearPickBtn.addEventListener('click', () => {
-    selectedNumbers = [];
-    document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('selected'));
-    updateSelection();
-});
-
-// 당첨 판정
-function checkRank(matches) {
-    switch(matches) {
-        case 6: return { rank: 1, prize: 2000000000, msg: '1등 당첨' };
-        case 5: return { rank: 3, prize: 1500000, msg: '3등 당첨' };
-        case 4: return { rank: 4, prize: 50000, msg: '4등 당첨' };
-        case 3: return { rank: 5, prize: 5000, msg: '5등 당첨' };
-        default: return { rank: 0, prize: 0, msg: '낙첨' };
-    }
-}
-
-async function playLotto() {
-    if (balance < 1000) {
-        alert('잔액이 부족합니다.');
-        return;
-    }
-
-    drawBtn.disabled = true;
-    balance -= 1000;
-    totalSpent += 1000;
-    updateStats();
-
-    lottoDisplay.innerHTML = '';
-    resultMessage.classList.add('hidden');
-
-    const winNumbers = [];
-    while (winNumbers.length < 6) {
-        const n = Math.floor(Math.random() * 45) + 1;
-        if (!winNumbers.includes(n)) winNumbers.push(n);
-    }
-    winNumbers.sort((a, b) => a - b);
-
-    for (const num of winNumbers) {
-        const ball = document.createElement('div');
-        const colorClass = num <= 10 ? 'yellow' : num <= 20 ? 'blue' : num <= 30 ? 'red' : num <= 40 ? 'grey' : 'green';
-        ball.className = `ball ${colorClass}`;
-        ball.textContent = num;
-        lottoDisplay.appendChild(ball);
-        await new Promise(r => setTimeout(r, 200));
-    }
-
-    const matches = selectedNumbers.filter(n => winNumbers.includes(n)).length;
-    const result = checkRank(matches);
-    
-    totalWon += result.prize;
-    balance += result.prize;
-    
-    resultMessage.textContent = `${result.msg} (일치: ${matches}개)`;
-    resultMessage.classList.remove('hidden');
-    
-    // 고급스러운 색상 적용
-    if (result.rank > 0) {
-        resultMessage.style.backgroundColor = 'rgba(46, 204, 113, 0.15)';
-        resultMessage.style.borderColor = 'rgba(46, 204, 113, 0.4)';
-        resultMessage.style.color = '#2ecc71';
-    } else {
-        resultMessage.style.backgroundColor = 'rgba(231, 76, 60, 0.15)';
-        resultMessage.style.borderColor = 'rgba(231, 76, 60, 0.4)';
-        resultMessage.style.color = '#e74c3c';
-    }
-
-    updateStats();
-    addToHistory(winNumbers, matches, result.rank);
-    drawBtn.disabled = false;
-}
-
-function updateStats() {
-    balanceEl.textContent = balance.toLocaleString() + '원';
-    const roi = totalSpent === 0 ? 0 : ((totalWon - totalSpent) / totalSpent * 100).toFixed(1);
-    roiEl.textContent = roi + '%';
-    roiEl.style.color = roi > 0 ? '#2ecc71' : roi < 0 ? '#e74c3c' : 'var(--text-color)';
-}
-
-function addToHistory(numbers, matches, rank) {
-    const li = document.createElement('li');
-    li.className = 'history-item';
-    const time = new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute: '2-digit' });
-    
-    let ballsHtml = '<div class="history-balls">';
-    numbers.forEach(num => {
-        const color = num <= 10 ? 'yellow' : num <= 20 ? 'blue' : num <= 30 ? 'red' : num <= 40 ? 'grey' : 'green';
-        ballsHtml += `<div class="small-ball ${color}">${num}</div>`;
+    // 코인 획득 검사
+    coins.forEach(c => {
+        if (!c.collected &&
+            player.x < c.x + c.width &&
+            player.x + player.width > c.x &&
+            player.y < c.y + c.height &&
+            player.y + player.height > c.y) {
+            
+            c.collected = true;
+            score += 100;
+            scoreEl.textContent = score;
+        }
     });
-    ballsHtml += '</div>';
 
-    li.innerHTML = `<span>${time} <span style="margin-left:8px; color:${rank>0?'#2ecc71':'var(--text-muted)'}">${rank > 0 ? rank+'등' : '낙첨'}</span></span>${ballsHtml}`;
-    historyList.prepend(li);
-    if (historyList.children.length > 5) historyList.lastChild.remove();
-}
-
-drawBtn.addEventListener('click', playLotto);
-initTheme(); // 테마 초기화
-initPicker();
-updateStats();
-
-function initTheme() {
-    const themeBtn = document.getElementById('theme-toggle');
-    if(themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-        });
+    // 낙사(게임 오버) 검사
+    if (player.y > canvas.height) {
+        gameOver = true;
+        setTimeout(() => {
+            alert(`게임 오버! 🍄\n최종 점수: ${score}점\n확인을 누르면 다시 시작합니다.`);
+            resetGame();
+        }, 100);
     }
 }
+
+// 화면 그리기
+function draw() {
+    // 배경 지우기
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 지형 그리기
+    platforms.forEach(p => {
+        ctx.fillStyle = '#8B4513'; // 땅(갈색)
+        ctx.fillRect(p.x, p.y, p.width, p.height);
+        
+        ctx.fillStyle = '#228B22'; // 잔디(초록색)
+        ctx.fillRect(p.x, p.y, p.width, 6);
+    });
+
+    // 코인 그리기
+    ctx.fillStyle = '#FFD700'; // 금화
+    coins.forEach(c => {
+        if (!c.collected) {
+            ctx.beginPath();
+            ctx.arc(c.x + c.width/2, c.y + c.height/2, c.width/2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#DAA520';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.closePath();
+        }
+    });
+
+    // 플레이어 그리기 (빨간색 캐릭터)
+    ctx.fillStyle = '#E52521';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    
+    // 캐릭터 눈동자 (방향에 따라)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(player.x + (player.dx >= 0 ? 18 : 4), player.y + 5, 8, 8);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(player.x + (player.dx >= 0 ? 22 : 4), player.y + 7, 4, 4);
+}
+
+// 메인 게임 루프
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+// 게임 시작
+resetGame();
+gameLoop();

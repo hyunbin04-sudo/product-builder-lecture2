@@ -3,61 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>럭키 로또 프리미엄</title>
+    <title>슈퍼 미니 어드벤처 🍄</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- 테마 버튼 숨김 (고급스러운 다크 모드 고정) -->
-        <button id="theme-toggle" class="theme-toggle" title="테마 변경" style="display:none;"></button>
-        <h1>Lotto Premium</h1>
-        
-        <!-- 내 자산 정보 -->
-        <div class="stats-board">
-            <div class="stat-item">
-                <span class="stat-label">Balance</span>
-                <span id="balance" class="stat-value">10,000원</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">ROI</span>
-                <span id="roi" class="stat-value">0%</span>
-            </div>
+    <div class="game-container">
+        <h1>Super Mini Adventure 🍄</h1>
+        <div class="score-board">
+            <span>SCORE: <span id="score">0</span></span>
         </div>
-
-        <!-- 번호 선택 영역 -->
-        <div class="pick-section">
-            <h3>번호 선택 (6개)</h3>
-            <div id="number-picker" class="number-grid">
-                <!-- 1~45 버튼이 JS로 생성됨 -->
-            </div>
-            <div class="pick-controls">
-                <button id="auto-pick" class="mini-btn">자동 선택</button>
-                <button id="clear-pick" class="mini-btn">초기화</button>
-            </div>
-            <div id="my-selection" class="selection-display">
-                번호를 선택해주세요.
-            </div>
-        </div>
-
-        <div class="divider">Draw Result</div>
-
-        <!-- 추첨 결과 영역 -->
-        <div id="lotto-display" class="ball-container">
-            <div class="placeholder">결제 및 추첨을 진행해주세요.</div>
-        </div>
-
-        <div class="controls">
-            <button id="draw-btn" class="primary-btn" disabled>1,000원 결제 및 추첨</button>
-        </div>
-
-        <!-- 당첨 결과 알림 -->
-        <div id="result-message" class="result-box hidden">
-            <!-- 결과 메시지가 여기에 나타남 -->
-        </div>
-
-        <div class="history-section">
-            <h3>Play History</h3>
-            <ul id="history-list"></ul>
+        <!-- 게임 화면을 그릴 캔버스 -->
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div class="controls-info">
+            <p>방향키 ⬅️ ➡️ 이동 | ⬆️ 점프 (또는 스페이스바)</p>
         </div>
     </div>
     <script src="main.js"></script>
