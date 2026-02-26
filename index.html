@@ -3,50 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>럭키 로또 월드 🎮</title>
+    <title>럭키 로또 프리미엄</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <button id="theme-toggle" class="theme-toggle" title="테마 변경">🎨</button>
-        <h1>LUCKY LOTTO 🎰</h1>
+        <!-- 테마 버튼 숨김 (고급스러운 다크 모드 고정) -->
+        <button id="theme-toggle" class="theme-toggle" title="테마 변경" style="display:none;"></button>
+        <h1>Lotto Premium</h1>
         
         <!-- 내 자산 정보 -->
         <div class="stats-board">
             <div class="stat-item">
-                <span class="stat-label">내 잔액</span>
+                <span class="stat-label">Balance</span>
                 <span id="balance" class="stat-value">10,000원</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">총 수익률</span>
+                <span class="stat-label">ROI</span>
                 <span id="roi" class="stat-value">0%</span>
             </div>
         </div>
 
         <!-- 번호 선택 영역 -->
         <div class="pick-section">
-            <h3>내 번호 고르기 (6개)</h3>
+            <h3>번호 선택 (6개)</h3>
             <div id="number-picker" class="number-grid">
                 <!-- 1~45 버튼이 JS로 생성됨 -->
             </div>
             <div class="pick-controls">
-                <button id="auto-pick" class="mini-btn">자동 완성 ✨</button>
-                <button id="clear-pick" class="mini-btn">전체 취소 ❌</button>
+                <button id="auto-pick" class="mini-btn">자동 선택</button>
+                <button id="clear-pick" class="mini-btn">초기화</button>
             </div>
             <div id="my-selection" class="selection-display">
-                선택된 번호가 없습니다.
+                번호를 선택해주세요.
             </div>
         </div>
 
-        <div class="divider">당첨 번호 추첨장</div>
+        <div class="divider">Draw Result</div>
 
         <!-- 추첨 결과 영역 -->
         <div id="lotto-display" class="ball-container">
-            <div class="placeholder">구매 버튼을 눌러주세요! 🍀</div>
+            <div class="placeholder">결제 및 추첨을 진행해주세요.</div>
         </div>
 
         <div class="controls">
-            <button id="draw-btn" class="primary-btn" disabled>로또 구매하기 (1,000원) 🚀</button>
+            <button id="draw-btn" class="primary-btn" disabled>1,000원 결제 및 추첨</button>
         </div>
 
         <!-- 당첨 결과 알림 -->
@@ -55,7 +56,7 @@
         </div>
 
         <div class="history-section">
-            <h3>플레이 기록 📜</h3>
+            <h3>Play History</h3>
             <ul id="history-list"></ul>
         </div>
     </div>
