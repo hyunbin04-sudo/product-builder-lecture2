@@ -1,26 +1,15 @@
 :root {
-    /* 귀여운 게임 테마 변수 */
     --primary-color: #ff9f43;
     --background: #f0f2f5;
     --container-bg: #ffffff;
     --text-color: #576574;
     --text-muted: #8395a7;
     --border-color: #eeeff1;
-    --ball-size: 60px;
-    --accent: #ff6b6b;
-    --btn-shadow: #ee5253;
-}
-
-body.light-mode {
-    --background: #f7f1e3;
-    --container-bg: #ffffff;
-    --text-color: #4b4b4b;
-    --primary-color: #ffb142;
+    --ball-size: 50px;
 }
 
 body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-    /* 귀여운 게임 느낌의 배경: 구름 느낌의 그라데이션 */
+    font-family: 'Pretendard', sans-serif;
     background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
     background-attachment: fixed;
     color: var(--text-color);
@@ -32,193 +21,180 @@ body {
     transition: all 0.5s ease;
 }
 
-body.light-mode {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-}
-
 .container {
     background: var(--container-bg);
-    padding: 3rem 2rem;
-    border-radius: 40px; /* 아주 둥글게 */
+    padding: 2.5rem 1.5rem;
+    border-radius: 40px;
     box-shadow: 0 20px 0 rgba(0, 0, 0, 0.05), 0 30px 60px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 480px;
-    width: 90%;
+    max-width: 550px;
+    width: 95%;
     position: relative;
     border: 8px solid #fff;
-}
-
-.theme-toggle {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    background: #f1f2f6;
-    border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 0 #dfe4ea;
-    transition: all 0.1s active;
-}
-
-.theme-toggle:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 #dfe4ea;
+    margin: 20px;
 }
 
 h1 {
-    font-size: 2.8rem;
-    margin-bottom: 0.2rem;
+    font-size: 2.5rem;
     color: var(--primary-color);
     text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.05);
-    font-weight: 900;
+    margin-bottom: 1.5rem;
 }
 
-.subtitle {
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
+/* 자산 보드 */
+.stats-board {
+    display: flex;
+    justify-content: space-around;
+    background: #f1f2f6;
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    border: 2px solid #fff;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
+.stat-value { font-size: 1.2rem; font-weight: 900; color: #ff6b6b; }
+
+/* 번호 선택판 */
+.pick-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 30px;
+    margin-bottom: 1.5rem;
+}
+
+.number-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    margin: 15px 0;
+}
+
+.num-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #dfe4ea;
+    background: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.num-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: #ee5253;
+    transform: scale(1.1);
+}
+
+.pick-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.mini-btn {
+    padding: 8px 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #ced6e0;
+}
+
+.selection-display {
+    font-weight: 800;
+    color: var(--primary-color);
     font-size: 1rem;
-    font-weight: 600;
+    padding: 10px;
+    background: #fff;
+    border-radius: 15px;
+    min-height: 40px;
+}
+
+.divider {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--text-muted);
+    margin: 1.5rem 0;
+    position: relative;
 }
 
 .ball-container {
     display: flex;
     justify-content: center;
     gap: 10px;
-    min-height: 100px;
+    min-height: 80px;
     align-items: center;
-    margin-bottom: 2.5rem;
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 30px;
-    border: 3px dashed #dfe4ea;
-}
-
-.ball {
-    width: var(--ball-size);
-    height: var(--ball-size);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    box-shadow: inset -4px -4px 0 rgba(0,0,0,0.1), 0 8px 15px rgba(0,0,0,0.1);
-    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-
-/* 버튼 스타일 (게임 스타일) */
-button.primary-btn {
-    background: #ff9f43;
-    color: white;
-    font-size: 1.2rem;
-    padding: 15px 30px;
-    border-radius: 20px;
-    border: none;
-    box-shadow: 0 6px 0 #ee5253;
-    cursor: pointer;
-    font-weight: 800;
-    transition: all 0.1s;
-    flex-grow: 1;
-}
-
-button.primary-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.05);
-}
-
-button.primary-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #ee5253;
-}
-
-button.secondary-btn {
-    background: #ced6e0;
-    color: #576574;
-    padding: 15px 20px;
-    border-radius: 20px;
-    border: none;
-    box-shadow: 0 6px 0 #a4b0be;
-    cursor: pointer;
-    font-weight: 800;
-    transition: all 0.1s;
-}
-
-button.secondary-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #a4b0be;
-}
-
-.ball {
-    width: var(--ball-size);
-    height: var(--ball-size);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-/* 로또 번호별 색상 */
-.ball.yellow { background: radial-gradient(circle at 30% 30%, #fbc531, #e1b12c); }
-.ball.blue { background: radial-gradient(circle at 30% 30%, #00a8ff, #0097e6); }
-.ball.red { background: radial-gradient(circle at 30% 30%, #e84118, #c23616); }
-.ball.grey { background: radial-gradient(circle at 30% 30%, #7f8c8d, #718093); }
-.ball.green { background: radial-gradient(circle at 30% 30%, #4cd137, #44bd32); }
-
-@keyframes bounceIn {
-    0% { transform: scale(0); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
     margin-bottom: 2rem;
+    background: #f1f2f6;
+    padding: 15px;
+    border-radius: 25px;
 }
 
-button {
-    padding: 12px 24px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
+.ball {
+    width: var(--ball-size);
+    height: var(--ball-size);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: white;
+    box-shadow: inset -4px -4px 0 rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.1);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.ball.yellow { background: #fbc531; }
+.ball.blue { background: #00a8ff; }
+.ball.red { background: #e84118; }
+.ball.grey { background: #7f8c8d; }
+.ball.green { background: #4cd137; }
+
+/* 결과창 */
+.result-box {
+    background: #ff6b6b;
+    color: white;
+    padding: 15px;
+    border-radius: 20px;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    animation: bounce 0.5s ease;
+}
+
+.hidden { display: none; }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .primary-btn {
-    background: var(--primary-color);
-    color: #000;
-    flex-grow: 1;
+    background: #ff9f43;
+    color: white;
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #ee5253;
+    transition: all 0.1s;
 }
 
-.primary-btn:hover {
-    background: #e5c13b;
-    transform: translateY(-2px);
-}
-
-.secondary-btn {
-    background: var(--border-color);
-    color: var(--text-color);
-}
-
-.secondary-btn:hover {
-    filter: brightness(1.2);
-}
+.primary-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #ee5253; }
+.primary-btn:disabled { background: #ced6e0; box-shadow: 0 6px 0 #a4b0be; cursor: not-allowed; }
 
 .history-section {
     margin-top: 1.5rem;
@@ -227,39 +203,6 @@ button {
     border-radius: 25px;
     text-align: left;
 }
-
-.history-section h3 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.history-section h3::before {
-    content: '📜';
-}
-
-.history-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 2px solid #fff;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.small-ball {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-weight: 800;
-    box-shadow: inset -2px -2px 0 rgba(0,0,0,0.1);
-}
+.history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #fff; font-size: 0.85rem; font-weight: 600; }
+.history-balls { display: flex; gap: 4px; }
+.small-ball { width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.65rem; color: white; }
