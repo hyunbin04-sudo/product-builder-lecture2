@@ -2,6 +2,23 @@ const lottoDisplay = document.getElementById('lotto-display');
 const drawBtn = document.getElementById('draw-btn');
 const resetBtn = document.getElementById('reset-btn');
 const historyList = document.getElementById('history-list');
+const themeToggle = document.getElementById('theme-toggle');
+
+// 테마 관리
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+    }
+}
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+});
+
+initTheme();
 
 function getRandomNumbers() {
     const numbers = [];

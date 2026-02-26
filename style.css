@@ -1,10 +1,24 @@
 :root {
+    /* 다크 모드 (기본) */
     --primary-color: #f7d544;
     --background: #121212;
     --container-bg: #1e1e1e;
     --text-color: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --border-color: #333;
+    --history-bg: #2a2a2a;
     --ball-size: 55px;
     --accent: #ff4757;
+}
+
+body.light-mode {
+    /* 라이트 모드 */
+    --background: #f5f6fa;
+    --container-bg: #ffffff;
+    --text-color: #2f3640;
+    --text-muted: rgba(47, 54, 64, 0.6);
+    --border-color: #dcdde1;
+    --history-bg: #f5f6fa;
 }
 
 * {
@@ -21,16 +35,42 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
     background: var(--container-bg);
     padding: 2.5rem;
     border-radius: 24px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
     text-align: center;
     max-width: 500px;
     width: 90%;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+/* 테마 토글 버튼 */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--border-color);
+    color: var(--text-color);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    transform: rotate(15deg) scale(1.1);
 }
 
 h1 {
@@ -41,7 +81,7 @@ h1 {
 }
 
 .subtitle {
-    opacity: 0.6;
+    color: var(--text-muted);
     margin-bottom: 2rem;
     font-size: 0.9rem;
 }
@@ -56,7 +96,7 @@ h1 {
 }
 
 .placeholder {
-    opacity: 0.4;
+    color: var(--text-muted);
     font-style: italic;
 }
 
@@ -114,16 +154,16 @@ button {
 }
 
 .secondary-btn {
-    background: #333;
-    color: #ccc;
+    background: var(--border-color);
+    color: var(--text-color);
 }
 
 .secondary-btn:hover {
-    background: #444;
+    filter: brightness(1.2);
 }
 
 .history-section {
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border-color);
     padding-top: 1.5rem;
     text-align: left;
 }
@@ -131,7 +171,7 @@ button {
 .history-section h3 {
     font-size: 1rem;
     margin-bottom: 1rem;
-    opacity: 0.8;
+    color: var(--text-muted);
 }
 
 #history-list {
@@ -143,7 +183,7 @@ button {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
 }
 
