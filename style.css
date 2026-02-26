@@ -1,52 +1,126 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+KR:wght@400;700&display=swap');
 
 :root {
-    --bg-color: #5c94fc; /* 슈퍼마리오 느낌의 하늘색 */
-    --text-color: #ffffff;
-    --container-bg: #222222;
+    --bg-dark: #0a0a0b;
+    --ui-border: #3d342a;
+    --ui-gold: #b5952f;
+    --hp-color: #e74c3c;
+    --exp-color: #2ecc71;
+    --text-silver: #cccccc;
+    --canvas-bg: #1a1a1d;
 }
 
 body {
-    font-family: 'Press Start 2P', cursive, sans-serif;
-    background-color: var(--container-bg);
-    color: var(--text-color);
+    background-color: var(--bg-dark);
+    color: var(--text-silver);
+    font-family: 'Noto Serif KR', serif;
+    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
 }
 
-.game-container {
+.game-wrapper {
+    position: relative;
+    border: 4px solid var(--ui-border);
+    box-shadow: 0 0 50px rgba(0,0,0,1);
+    background: #000;
+}
+
+.header {
+    background: linear-gradient(to bottom, #2a2a2e, #1a1a1d);
+    border-bottom: 2px solid var(--ui-border);
+    padding: 8px 15px;
     text-align: center;
 }
 
-h1 {
-    font-size: 1.8rem;
-    color: #ffd700;
-    text-shadow: 3px 3px #000000;
-    margin-bottom: 20px;
-}
-
-.score-board {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    text-align: left;
-    text-shadow: 2px 2px #000;
+.location {
+    font-family: 'Cinzel', serif;
+    color: var(--ui-gold);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
 }
 
 canvas {
-    background-color: var(--bg-color);
-    border: 4px solid #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     display: block;
-    margin: 0 auto;
+    background: var(--canvas-bg);
 }
 
-.controls-info {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #aaaaaa;
-    line-height: 1.5;
+/* 상태바 (하단 UI) */
+.status-bar {
+    display: flex;
+    height: 60px;
+    background: #0d0d0f;
+    border-top: 2px solid var(--ui-border);
+    align-items: center;
+    padding: 0 15px;
+}
+
+.stat-left {
+    width: 100px;
+}
+
+.level-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.level-box .label { font-size: 0.6rem; color: var(--ui-gold); font-weight: bold; }
+.level-box .value { font-size: 1.4rem; font-weight: 800; color: #fff; font-family: 'Cinzel'; }
+
+.stat-center {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.hp-container, .exp-container {
+    height: 16px;
+    background: #222;
+    border: 1px solid #444;
+    margin-bottom: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hp-fill {
+    height: 100%;
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    width: 100%;
+    transition: width 0.3s ease;
+}
+
+.exp-fill {
+    height: 100%;
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    white-space: nowrap;
+}
+
+.stat-right {
+    width: 140px;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--ui-gold);
+}
+
+.game-info {
+    position: absolute;
+    bottom: -40px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
 }

@@ -1,185 +1,220 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
 
-let score = 0;
-let gameOver = false;
+// UI 요소
+const hpBar = document.getElementById('hp-bar');
+const expBar = document.getElementById('exp-bar');
+const hpVal = document.getElementById('hp-val');
+const expPercent = document.getElementById('exp-percent');
+const levelEl = document.getElementById('level');
+const goldEl = document.getElementById('gold');
 
-// 키보드 입력 상태 관리
+// 게임 데이터
+let gameState = {
+    level: 1,
+    hp: 100,
+    maxHp: 100,
+    exp: 0,
+    maxExp: 1000,
+    gold: 0,
+    gameOver: false
+};
+
 const keys = {
-    ArrowRight: false,
-    ArrowLeft: false,
     ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
     Space: false
 };
 
-document.addEventListener('keydown', (e) => {
-    if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
-    if (e.code === 'Space') keys.ArrowUp = true;
-});
-
-document.addEventListener('keyup', (e) => {
-    if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
-    if (e.code === 'Space') keys.ArrowUp = false;
-});
-
-// 플레이어 (마리오 역할)
+// 플레이어 설정 (기사 캐릭터)
 const player = {
-    x: 50,
-    y: 300,
-    width: 30,
-    height: 30,
-    speed: 5,
-    dx: 0,
-    dy: 0,
-    gravity: 0.6,
-    jumpPower: -12,
-    grounded: false
+    x: 400,
+    y: 250,
+    width: 32,
+    height: 32,
+    speed: 3,
+    color: '#3498db', // 기사 느낌의 파란색
+    isAttacking: false,
+    attackRange: 40,
+    lastAttackTime: 0
 };
 
-// 지형 (발판 및 바닥)
-const platforms = [
-    { x: 0, y: 350, width: 800, height: 50 }, // 메인 바닥
-    { x: 200, y: 250, width: 120, height: 20 },
-    { x: 400, y: 150, width: 120, height: 20 },
-    { x: 600, y: 250, width: 120, height: 20 }
-];
+// 몬스터 (오크/해골 느낌)
+let monsters = [];
+function spawnMonster() {
+    if (monsters.length >= 5) return;
+    
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = Math.random() * canvas.width; y = -50; }
+    else if (side === 1) { x = canvas.width + 50; y = Math.random() * canvas.height; }
+    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 50; }
+    else { x = -50; y = Math.random() * canvas.height; }
 
-// 코인 (점수 아이템)
-let coins = [
-    { x: 250, y: 210, width: 20, height: 20, collected: false },
-    { x: 450, y: 110, width: 20, height: 20, collected: false },
-    { x: 650, y: 210, width: 20, height: 20, collected: false },
-    { x: 700, y: 310, width: 20, height: 20, collected: false }
-];
-
-// 게임 초기화
-function resetGame() {
-    player.x = 50;
-    player.y = 300;
-    player.dx = 0;
-    player.dy = 0;
-    score = 0;
-    scoreEl.textContent = score;
-    coins.forEach(c => c.collected = false);
-    gameOver = false;
+    monsters.push({
+        x, y,
+        width: 30,
+        height: 30,
+        speed: 1 + Math.random() * 0.8,
+        hp: 3,
+        maxHp: 3,
+        color: '#e67e22', // 오크 주황색
+        type: 'Orc'
+    });
 }
+
+// 입력 리스너
+document.addEventListener('keydown', (e) => {
+    if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+});
+document.addEventListener('keyup', (e) => {
+    if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
+});
 
 // 로직 업데이트
 function update() {
-    if (gameOver) return;
+    if (gameState.gameOver) return;
 
-    // 좌우 이동
-    if (keys.ArrowRight) {
-        player.dx = player.speed;
-    } else if (keys.ArrowLeft) {
-        player.dx = -player.speed;
-    } else {
-        player.dx = 0;
-    }
-
-    // 점프
-    if (keys.ArrowUp && player.grounded) {
-        player.dy = player.jumpPower;
-        player.grounded = false;
-    }
-
-    // 중력 적용
-    player.dy += player.gravity;
-    player.x += player.dx;
-    player.y += player.dy;
+    // 플레이어 이동 (8방향)
+    let dx = 0, dy = 0;
+    if (keys.ArrowUp) dy -= player.speed;
+    if (keys.ArrowDown) dy += player.speed;
+    if (keys.ArrowLeft) dx -= player.speed;
+    if (keys.ArrowRight) dx += player.speed;
+    
+    player.x += dx;
+    player.y += dy;
 
     // 화면 경계 제한
-    if (player.x < 0) player.x = 0;
-    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+    player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+    player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 
-    player.grounded = false;
+    // 몬스터 AI 및 충돌
+    monsters.forEach((m, idx) => {
+        // 플레이어 추격
+        const angle = Math.atan2(player.y - m.y, player.x - m.x);
+        m.x += Math.cos(angle) * m.speed;
+        m.y += Math.sin(angle) * m.speed;
 
-    // 플랫폼(지형) 충돌 처리
-    platforms.forEach(p => {
-        // 플레이어가 떨어지는 중이고, 플랫폼 위로 겹칠 때만 착지 판정
-        if (player.y + player.height <= p.y + player.dy && 
-            player.x + player.width > p.x && 
-            player.x < p.x + p.width) {
-            
-            if (player.y + player.height + player.dy >= p.y) {
-                player.grounded = true;
-                player.dy = 0;
-                player.y = p.y - player.height;
+        // 플레이어와 충돌 시 데미지
+        const dist = Math.hypot(player.x - m.x, player.y - m.y);
+        if (dist < 25) {
+            gameState.hp -= 0.2; // 초당 약 12 데미지
+            if (gameState.hp <= 0) {
+                gameState.hp = 0;
+                gameOver();
             }
+            updateUI();
         }
     });
 
-    // 코인 획득 검사
-    coins.forEach(c => {
-        if (!c.collected &&
-            player.x < c.x + c.width &&
-            player.x + player.width > c.x &&
-            player.y < c.y + c.height &&
-            player.y + player.height > c.y) {
-            
-            c.collected = true;
-            score += 100;
-            scoreEl.textContent = score;
-        }
-    });
+    // 공격 처리 (스페이스바)
+    const now = Date.now();
+    if (keys.Space && now - player.lastAttackTime > 500) {
+        player.isAttacking = true;
+        player.lastAttackTime = now;
+        
+        // 근접 몬스터 타격
+        monsters.forEach((m, idx) => {
+            const dist = Math.hypot(player.x - m.x, player.y - m.y);
+            if (dist < player.attackRange + 10) {
+                m.hp -= 1;
+                if (m.hp <= 0) {
+                    // 처치 성공
+                    gameState.exp += 250;
+                    gameState.gold += Math.floor(Math.random() * 50) + 10;
+                    monsters.splice(idx, 1);
+                    checkLevelUp();
+                }
+            }
+        });
 
-    // 낙사(게임 오버) 검사
-    if (player.y > canvas.height) {
-        gameOver = true;
-        setTimeout(() => {
-            alert(`게임 오버! 🍄\n최종 점수: ${score}점\n확인을 누르면 다시 시작합니다.`);
-            resetGame();
-        }, 100);
+        setTimeout(() => { player.isAttacking = false; }, 150);
     }
+
+    // 몬스터 스폰 주기 관리
+    if (Math.random() < 0.01) spawnMonster();
+}
+
+function checkLevelUp() {
+    if (gameState.exp >= gameState.maxExp) {
+        gameState.level++;
+        gameState.exp = 0;
+        gameState.maxExp += 500;
+        gameState.maxHp += 20;
+        gameState.hp = gameState.maxHp;
+        alert(`레벨업! 현재 레벨: ${gameState.level}`);
+    }
+    updateUI();
+}
+
+function updateUI() {
+    hpBar.style.width = (gameState.hp / gameState.maxHp * 100) + '%';
+    expBar.style.width = (gameState.exp / gameState.maxExp * 100) + '%';
+    hpVal.textContent = Math.ceil(gameState.hp);
+    expPercent.textContent = Math.floor(gameState.exp / gameState.maxExp * 100);
+    levelEl.textContent = gameState.level;
+    goldEl.textContent = gameState.gold.toLocaleString();
+}
+
+function gameOver() {
+    gameState.gameOver = true;
+    alert(`캐릭터가 사망했습니다.\n최종 레벨: ${gameState.level}\n획득 골드: ${gameState.gold}`);
+    location.reload();
 }
 
 // 화면 그리기
 function draw() {
-    // 배경 지우기
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 배경 (어두운 돌바닥 느낌)
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // 격자 무늬 (바닥 타일 느낌)
+    ctx.strokeStyle = '#1a1a1d';
+    ctx.lineWidth = 1;
+    for(let i=0; i<canvas.width; i+=40) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for(let j=0; j<canvas.height; j+=40) {
+        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+    }
 
-    // 지형 그리기
-    platforms.forEach(p => {
-        ctx.fillStyle = '#8B4513'; // 땅(갈색)
-        ctx.fillRect(p.x, p.y, p.width, p.height);
+    // 몬스터 그리기
+    monsters.forEach(m => {
+        ctx.fillStyle = m.color;
+        ctx.fillRect(m.x, m.y, m.width, m.height);
         
-        ctx.fillStyle = '#228B22'; // 잔디(초록색)
-        ctx.fillRect(p.x, p.y, p.width, 6);
+        // 몬스터 체력바
+        ctx.fillStyle = '#000';
+        ctx.fillRect(m.x, m.y - 10, m.width, 4);
+        ctx.fillStyle = '#e74c3c';
+        ctx.fillRect(m.x, m.y - 10, (m.hp/m.maxHp) * m.width, 4);
     });
 
-    // 코인 그리기
-    ctx.fillStyle = '#FFD700'; // 금화
-    coins.forEach(c => {
-        if (!c.collected) {
-            ctx.beginPath();
-            ctx.arc(c.x + c.width/2, c.y + c.height/2, c.width/2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#DAA520';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.closePath();
-        }
-    });
-
-    // 플레이어 그리기 (빨간색 캐릭터)
-    ctx.fillStyle = '#E52521';
+    // 플레이어 그리기
+    if (player.isAttacking) {
+        ctx.beginPath();
+        ctx.arc(player.x + player.width/2, player.y + player.height/2, player.attackRange, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fill();
+    }
+    
+    ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
     
-    // 캐릭터 눈동자 (방향에 따라)
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(player.x + (player.dx >= 0 ? 18 : 4), player.y + 5, 8, 8);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(player.x + (player.dx >= 0 ? 22 : 4), player.y + 7, 4, 4);
+    // 기사 투구/망토 표현 (단순 박스 위 장식)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(player.x + 8, player.y + 8, 16, 4); // 투구 슬릿
 }
 
-// 메인 게임 루프
 function gameLoop() {
     update();
     draw();
     requestAnimationFrame(gameLoop);
 }
 
-// 게임 시작
-resetGame();
+// 시작
+updateUI();
 gameLoop();

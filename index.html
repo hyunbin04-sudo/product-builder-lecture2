@@ -3,19 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>슈퍼 미니 어드벤처 🍄</title>
+    <title>Lineage Mini Classic ⚔️</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>Super Mini Adventure 🍄</h1>
-        <div class="score-board">
-            <span>SCORE: <span id="score">0</span></span>
+    <div class="game-wrapper">
+        <div class="header">
+            <span class="location">글루디오 던전 입구</span>
         </div>
-        <!-- 게임 화면을 그릴 캔버스 -->
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div class="controls-info">
-            <p>방향키 ⬅️ ➡️ 이동 | ⬆️ 점프 (또는 스페이스바)</p>
+
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+        <!-- 리니지 스타일 상태바 -->
+        <div class="status-bar">
+            <div class="stat-left">
+                <div class="level-box">
+                    <span class="label">LV</span>
+                    <span id="level" class="value">1</span>
+                </div>
+            </div>
+            
+            <div class="stat-center">
+                <div class="hp-container">
+                    <div id="hp-bar" class="hp-fill"></div>
+                    <span class="bar-text">HP <span id="hp-val">100</span> / 100</span>
+                </div>
+                <div class="exp-container">
+                    <div id="exp-bar" class="exp-fill"></div>
+                    <span class="bar-text">EXP <span id="exp-percent">0</span>%</span>
+                </div>
+            </div>
+
+            <div class="stat-right">
+                <div class="gold-box">
+                    <img src="https://img.icons8.com/color/48/000000/coins.png" width="20">
+                    <span id="gold">0</span> 아데나
+                </div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            [방향키] 이동 | [스페이스바] 공격 (몬스터 근처에서)
         </div>
     </div>
     <script src="main.js"></script>
