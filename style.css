@@ -1,126 +1,196 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+KR:wght@400;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 :root {
-    --bg-dark: #0a0a0b;
-    --ui-border: #3d342a;
-    --ui-gold: #b5952f;
-    --hp-color: #e74c3c;
-    --exp-color: #2ecc71;
-    --text-silver: #cccccc;
-    --canvas-bg: #1a1a1d;
+    --bg-color: #f5f6f8;
+    --panel-bg: #ffffff;
+    --border-color: #e1e4e8;
+    --text-primary: #2d3436;
+    --text-secondary: #586069;
+    --accent-color: #0366d6;
+    --accent-hover: #005cc5;
+    --danger-color: #cb2431;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: var(--bg-dark);
-    color: var(--text-silver);
-    font-family: 'Noto Serif KR', serif;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.game-wrapper {
-    position: relative;
-    border: 4px solid var(--ui-border);
-    box-shadow: 0 0 50px rgba(0,0,0,1);
-    background: #000;
-}
-
-.header {
-    background: linear-gradient(to bottom, #2a2a2e, #1a1a1d);
-    border-bottom: 2px solid var(--ui-border);
-    padding: 8px 15px;
-    text-align: center;
-}
-
-.location {
-    font-family: 'Cinzel', serif;
-    color: var(--ui-gold);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-}
-
-canvas {
-    display: block;
-    background: var(--canvas-bg);
-}
-
-/* 상태바 (하단 UI) */
-.status-bar {
-    display: flex;
-    height: 60px;
-    background: #0d0d0f;
-    border-top: 2px solid var(--ui-border);
-    align-items: center;
-    padding: 0 15px;
-}
-
-.stat-left {
-    width: 100px;
-}
-
-.level-box {
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+/* 레이아웃 구조 */
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    padding: 0 24px;
+    height: 60px;
+    background-color: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    z-index: 10;
 }
-.level-box .label { font-size: 0.6rem; color: var(--ui-gold); font-weight: bold; }
-.level-box .value { font-size: 1.4rem; font-weight: 800; color: #fff; font-family: 'Cinzel'; }
 
-.stat-center {
+.editor-header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.editor-main {
+    display: flex;
     flex: 1;
-    padding: 0 20px;
-}
-
-.hp-container, .exp-container {
-    height: 16px;
-    background: #222;
-    border: 1px solid #444;
-    margin-bottom: 4px;
-    position: relative;
     overflow: hidden;
 }
 
-.hp-fill {
-    height: 100%;
-    background: linear-gradient(to bottom, #e74c3c, #c0392b);
-    width: 100%;
-    transition: width 0.3s ease;
+/* 툴바 패널 */
+.toolbar {
+    width: 300px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.exp-fill {
-    height: 100%;
-    background: linear-gradient(to bottom, #2ecc71, #27ae60);
-    width: 0%;
-    transition: width 0.3s ease;
+.tool-section h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
 }
 
-.bar-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.65rem;
-    font-weight: bold;
-    color: white;
-    text-shadow: 1px 1px 2px black;
-    white-space: nowrap;
-}
-
-.stat-right {
-    width: 140px;
-    text-align: right;
-    font-size: 0.85rem;
-    color: var(--ui-gold);
-}
-
-.game-info {
-    position: absolute;
-    bottom: -40px;
-    width: 100%;
+/* 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
     text-align: center;
-    font-size: 0.75rem;
-    color: #666;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--panel-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn:hover {
+    background-color: #f3f4f6;
+}
+
+.btn.primary {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.btn.primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.upload-btn {
+    background-color: #f1f8ff;
+    color: var(--accent-color);
+    border-color: #c8e1ff;
+    padding: 12px;
+}
+
+.upload-btn:hover {
+    background-color: #dbedff;
+}
+
+/* 필터 슬라이더 컨트롤 */
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.control-group label span {
+    color: var(--accent-color);
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-color);
+}
+
+.quick-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.transform-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#reset-filters {
+    color: var(--danger-color);
+    border-color: rgba(203, 36, 49, 0.2);
+}
+
+/* 캔버스 (미리보기) 영역 */
+.canvas-container {
+    flex: 1;
+    background-color: #e1e4e8;
+    background-image: 
+        linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc),
+        linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    overflow: auto;
+    position: relative;
+}
+
+.placeholder-text {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    text-align: center;
+    pointer-events: none;
+    background: rgba(255,255,255,0.8);
+    padding: 20px 40px;
+    border-radius: 12px;
+    border: 2px dashed #999;
+}
+
+#image-preview {
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+    /* CSS 필터가 JS를 통해 인라인으로 적용됩니다 */
 }

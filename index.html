@@ -3,49 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lineage Mini Classic ⚔️</title>
+    <title>웹 이미지 에디터 🎨</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-wrapper">
-        <div class="header">
-            <span class="location">글루디오 던전 입구</span>
-        </div>
-
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
-
-        <!-- 리니지 스타일 상태바 -->
-        <div class="status-bar">
-            <div class="stat-left">
-                <div class="level-box">
-                    <span class="label">LV</span>
-                    <span id="level" class="value">1</span>
-                </div>
+    <div class="editor-container">
+        <!-- 상단 헤더 -->
+        <header class="editor-header">
+            <h1>Web Image Editor</h1>
+            <div class="header-actions">
+                <button id="download-btn" class="btn primary">다운로드 (PNG)</button>
             </div>
-            
-            <div class="stat-center">
-                <div class="hp-container">
-                    <div id="hp-bar" class="hp-fill"></div>
-                    <span class="bar-text">HP <span id="hp-val">100</span> / 100</span>
-                </div>
-                <div class="exp-container">
-                    <div id="exp-bar" class="exp-fill"></div>
-                    <span class="bar-text">EXP <span id="exp-percent">0</span>%</span>
-                </div>
-            </div>
+        </header>
 
-            <div class="stat-right">
-                <div class="gold-box">
-                    <img src="https://img.icons8.com/color/48/000000/coins.png" width="20">
-                    <span id="gold">0</span> 아데나
+        <!-- 메인 작업 영역 -->
+        <div class="editor-main">
+            <!-- 좌측 툴바 -->
+            <aside class="toolbar">
+                <div class="tool-section">
+                    <h3>파일</h3>
+                    <label for="image-upload" class="btn upload-btn">
+                        이미지 열기
+                        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                    </label>
                 </div>
-            </div>
-        </div>
 
-        <div class="game-info">
-            [방향키] 이동 | [스페이스바] 공격 (몬스터 근처에서)
+                <div class="tool-section">
+                    <h3>필터 효과</h3>
+                    <div class="filter-controls">
+                        <div class="control-group">
+                            <label for="brightness">밝기 <span id="brightness-val">100%</span></label>
+                            <input type="range" id="brightness" min="0" max="200" value="100">
+                        </div>
+                        <div class="control-group">
+                            <label for="contrast">대비 <span id="contrast-val">100%</span></label>
+                            <input type="range" id="contrast" min="0" max="200" value="100">
+                        </div>
+                        <div class="control-group">
+                            <label for="saturation">채도 <span id="saturation-val">100%</span></label>
+                            <input type="range" id="saturation" min="0" max="200" value="100">
+                        </div>
+                        <div class="control-group">
+                            <label for="blur">흐림 <span id="blur-val">0px</span></label>
+                            <input type="range" id="blur" min="0" max="20" value="0">
+                        </div>
+                        
+                        <div class="quick-filters">
+                            <button class="btn filter-btn" data-filter="grayscale(100%)">흑백</button>
+                            <button class="btn filter-btn" data-filter="sepia(100%)">세피아</button>
+                            <button class="btn filter-btn" data-filter="invert(100%)">반전</button>
+                            <button class="btn filter-btn" id="reset-filters">초기화</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>변형</h3>
+                    <div class="transform-controls">
+                        <button class="btn" id="rotate-left">↺ 좌로 회전</button>
+                        <button class="btn" id="rotate-right">↻ 우로 회전</button>
+                        <button class="btn" id="flip-x">↔ 좌우 반전</button>
+                        <button class="btn" id="flip-y">↕ 상하 반전</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 캔버스(이미지 표시) 영역 -->
+            <main class="canvas-container" id="drop-zone">
+                <div class="placeholder-text" id="placeholder">
+                    이미지를 드래그 앤 드롭하거나 <br>'이미지 열기'를 클릭하세요.
+                </div>
+                <img id="image-preview" src="" alt="preview" style="display: none;">
+            </main>
         </div>
     </div>
+    
+    <!-- 다운로드를 위해 필터가 적용된 이미지를 그릴 숨겨진 캔버스 -->
+    <canvas id="export-canvas" style="display: none;"></canvas>
+
     <script src="main.js"></script>
 </body>
 </html>
